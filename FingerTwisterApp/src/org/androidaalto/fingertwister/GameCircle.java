@@ -55,7 +55,7 @@ public class GameCircle {
 		double distance  = (center.x - aPoint.x) * (center.x - aPoint.x) + (center.y-aPoint.y)*(center.y - aPoint.y);
 		distance = Math.sqrt(distance);
 		
-		return (distance > radius);
+		return (distance < radius);
 	}
 
 	/**
@@ -67,8 +67,8 @@ public class GameCircle {
 
 		Bitmap image = getImage();
 		if (image != null) {
-			int bitmapLeft = center.x -image.getWidth()/2;
-			int bitmapTop = center.y - image.getHeight()/2;
+			int bitmapLeft = center.x - radius;
+			int bitmapTop = center.y - radius;
 			
 			//TODO consider aspect ratio?
 			
