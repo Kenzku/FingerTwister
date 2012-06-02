@@ -14,13 +14,22 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import org.metalev.multitouch.controller.MultiTouchController;
+import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         MultiTouchController.MultiTouchObjectCanvas<Object> {
 
     Engine engine;
-//    ArrayList<GameCircle> circles;
     GameCircleManager circleManager;
     
+    Random randomNumberGenerator;
+
     private enum GameState {
         IDLE,
         WAITING_ACTION,
@@ -41,6 +50,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 
     private GameState mState;
     private Instruction mCurrentInstruction;
+    private List<Instruction> mInstructionHistory;
 
     public GamePanel(Context context) {
         super(context);
@@ -52,35 +62,44 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         super(context, attrs);
 
         getHolder().addCallback(this);
+        
+        this.randomNumberGenerator = new Random();
 
         mTouchController = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
+        mInstructionHistory = new ArrayList<Instruction>();
 
+    }
+
+    public Instruction getCurrentInstruction() {
+        return mCurrentInstruction;
     }
 
     public void update() {
 
         // Update gamelogic here (Will be called 25 times/second)
         // detect user input
-//        if (mCurrTouchPoint.isDown()) {
-//            int numPoints = mCurrTouchPoint.getNumTouchPoints();
-//            float[] xs = mCurrTouchPoint.getXs();
-//            float[] ys = mCurrTouchPoint.getYs();
-//            float[] pressures = mCurrTouchPoint.getPressures();
-//            int[] pointerIds = mCurrTouchPoint.getPointerIds();
-//            float x = mCurrTouchPoint.getX(), y = mCurrTouchPoint.getY();
-//            float wd = getWidth(), ht = getHeight();
-//
-//            if (numPoints == 1) {
-//                // Draw ordinate lines for single touch point
-//                GameCircle newCircle = new GameCircle(new Point((int) x, (int) y),
-//                        50, false, Color.RED, getResources());
-//                synchronized (circles) {
-//                    circles.add(newCircle);
-//                }
-//            }
-//
-//        }
+        if (mCurrTouchPoint.isDown()) {
+            int index = mCurrTouchPoint.getNumTouchPoints() - 1;
+            float[] xs = mCurrTouchPoint.getXs();
+            float[] ys = mCurrTouchPoint.getYs();
+            float[] pressures = mCurrTouchPoint.getPressures();
+            int[] pointerIds = mCurrTouchPoint.getPointerIds();
+            float x = mCurrTouchPoint.getX(), y = mCurrTouchPoint.getY();
+            float wd = getWidth(), ht = getHeight();
+
+            // Check if matches current instruction
+            if (matchTouchToInstruction((int) xs[index], (int) ys[index])) {
+                // Store it in instructions
+                mInstructionHistory.add(mCurrentInstruction);
+//  TODO:              mCurrentInstruction = generateNextInstruction();
+                notifyUserEvent(true);
+            } else {
+                notifyUserEvent(false);
+            }
+        } else if (mCurrTouchPoint.getAction() == MotionEvent.ACTION_UP) {
+            notifyUserEvent(false);
+        }
     }
 
     @Override
@@ -172,6 +191,20 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 
     private void updateGameState(GameState newState) {
         mState = newState;
+
+        // TODO: notify activity or update something
+    }
+
+    private boolean matchTouchToInstruction(int x, int y) {
+        boolean result = false;
+
+        // TODO: call game circle manager
+        GameCircle circle = new GameCircle(new Point(x, y), 50, false, Color.RED, getResources());
+        if (circle != null && circle.color == mCurrentInstruction.color) {
+            result = true;
+        }
+
+        return result;
     }
 
 	public void setUserEventCallback(UserEventCallback uec)	{
@@ -184,6 +217,30 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 			userEventCallback.onUserEvent(event);
 		}
 	}
+	
+	public void generateNextInstruction()	{
+		Instruction newInstruction = new Instruction();
+		
+		newInstruction.finger = Fingers.values()[randomNumberGenerator.nextInt(5)];
+				
+		switch (randomNumberGenerator.nextInt(4))	{
+		case 0:
+			newInstruction.color = Color.RED;
+			break;
+		case 1:
+			newInstruction.color = Color.BLUE;
+			break;
+		case 2:
+			newInstruction.color = Color.GREEN;
+			break;
+		case 3:
+			newInstruction.color = Color.YELLOW;
+			break;
+		}
+		
+		mCurrentInstruction = newInstruction;
+		
+	}
 
     /**
      * Represents current instruction.
@@ -191,7 +248,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
     private class Instruction {
 
         public Fingers finger;
-        public Color color;
+        public int color;
 
     }
 
