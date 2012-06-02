@@ -16,9 +16,13 @@ gen/
 local.properties
 .classpath
 .project
+
 # files from idea
 *.idea
 .idea/
 *.iml
 out/
 classes/
+.classpath
+.project
+.settings/
