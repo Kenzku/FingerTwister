@@ -32,6 +32,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
         green = BitmapFactory.decodeResource(context.getResources(), R.drawable.green);
 
         engine = new Engine(this);
+        engine.start();
         circles = new ArrayList<GameCircle>();
         circles.add(new GameCircle(new Point(200,200), 100, false, null, green));
     }

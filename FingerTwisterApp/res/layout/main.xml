@@ -14,7 +14,7 @@
             android:text="nappi"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             />
     
         <TextView 
@@ -22,7 +22,7 @@
             android:background="#59FF00"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             />
         
 		<TextView
@@ -30,7 +30,7 @@
 		    android:text="Index"
 		    android:layout_width="0dp"
 		    android:layout_weight="1"
-		    android:layout_height="fill_parent"
+		    android:layout_height="wrap_content"
 		    android:gravity="center"
 		    />
 		
