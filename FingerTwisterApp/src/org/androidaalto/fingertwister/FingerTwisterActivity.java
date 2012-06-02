@@ -1,5 +1,7 @@
 package org.androidaalto.fingertwister;
 
+import org.androidaalto.fingertwister.GamePanel.Fingers;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 public class FingerTwisterActivity extends Activity implements UserEventCallback {
 
@@ -101,7 +104,27 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
 	public void onUserEvent(UserEvent event) {
 		boolean success = event.getSuccess();
 		if (success == true)	{
-			// get new instruction
+			GamePanel.Instruction currentInstruction = gamePane.getCurrentInstruction();
+			
+			TextView colorTextView = (TextView) findViewById(R.id.instruction_color);
+			colorTextView.setBackgroundColor(currentInstruction.color);
+			
+			TextView fingerTextView = (TextView) findViewById(R.id.instruction_finger);
+			
+//			switch (currentInstruction.finger.ordinal())	{
+//			case GamePanel.Fingers.INDEX.ordinal():
+//				fingerTextView.setText(R.string.index_finger);
+//				break;
+//			case GamePanel.Fingers.MIDDLE.ordinal():
+//				fingerTextView.setText(R.string.middle_finger);
+//				break;
+//			case GamePanel.Fingers.RING.ordinal():
+//				fingerTextView.setText(R.string.ring_finger);
+//				break;
+//			case GamePanel.Fingers.LITTLE.ordinal():
+//				fingerTextView.setText(R.string.little_finger);
+//				break;
+//			}
 		}
 		else	{
 			showDialog(DIALOG_GAME_OVER);

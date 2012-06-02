@@ -30,7 +30,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         WIN
     }
 
-    private enum Fingers {
+    public enum Fingers {
         THUMB,
         INDEX,
         MIDDLE,
@@ -243,7 +243,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
     /**
      * Represents current instruction.
      */
-    private class Instruction {
+    public class Instruction {
 
         public Fingers finger;
         public int color;
