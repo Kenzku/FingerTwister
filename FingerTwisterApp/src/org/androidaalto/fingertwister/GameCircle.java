@@ -1,5 +1,8 @@
 package org.androidaalto.fingertwister;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -12,7 +15,9 @@ import android.graphics.Point;
  */
 public class GameCircle {
 	
-	Point center;
+	Point leftTopPoint;
+	
+	Bitmap image;
 	
 	int radius;	// the radius of the circle
 	
@@ -20,12 +25,13 @@ public class GameCircle {
 	
 	Color color = null; // the color of the game circle; how to render it is another thing
 	
-	public GameCircle(Point center, int radius, boolean pressed, Color color) {
+	public GameCircle(Point leftTopPoint, int radius, boolean pressed, Color color, Bitmap image) {
 		super();
-		this.center = center;
+		this.leftTopPoint = leftTopPoint;
 		this.radius = radius;
 		this.pressed = pressed;
 		this.color = color;
+		this.image = image;
 	}
 		
 	
@@ -35,7 +41,7 @@ public class GameCircle {
 	 * @return
 	 */
 	public boolean isInsideCircle(Point aPoint) {
-		double distance  = (center.x - aPoint.x) * (center.x - aPoint.x) + (center.y-aPoint.y)*(center.y - aPoint.y);
+		double distance  = (leftTopPoint.x - aPoint.x) * (leftTopPoint.x - aPoint.x) + (leftTopPoint.y-aPoint.y)*(leftTopPoint.y - aPoint.y);
 		distance = Math.sqrt(distance);
 		
 		return (distance > radius);
@@ -45,9 +51,7 @@ public class GameCircle {
 	 * draw itself on the given canvas
 	 * @param theCanvas
 	 */
-	public void draw(Canvas theCanvas) {
-		
-		// save the 
-//		theCanvas.set
+	public void draw(Canvas canvas) {
+		canvas.drawBitmap(image, leftTopPoint.x, leftTopPoint.y, null);
 	}
 }
