@@ -1,14 +1,19 @@
 package org.androidaalto.fingertwister;
 
+import org.metalev.multitouch.controller.MultiTouchController;
+import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
 import org.metalev.multitouch.controller.MultiTouchController;
 import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
 
@@ -16,11 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         MultiTouchController.MultiTouchObjectCanvas<Object> {
 
     Engine engine;
-    ArrayList<GameCircle> circles;
+    GameCircleManager circleManager;
+    
     Random randomNumberGenerator;
 
     private enum GameState {
@@ -62,10 +69,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         mCurrTouchPoint = new PointInfo();
         mInstructionHistory = new ArrayList<Instruction>();
 
-        engine = new Engine(this);
-        engine.start();
-        circles = new ArrayList<GameCircle>();
-        circles.add(new GameCircle(new Point(200, 200), 100, false, Color.GREEN, context.getResources()));
     }
 
     public Instruction getCurrentInstruction() {
@@ -108,15 +111,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         // Draw everything on the screen here (called 25times/second)
 
         //Draw the background (blue)
-        canvas.drawColor(Color.BLUE);
+        canvas.drawColor(Color.GRAY);
 
-        //TODO: iterate thru the list of circles and call .draw in them
-        synchronized (circles) {
-            for (GameCircle gc : circles) {
-                gc.draw(canvas);
-            }
-        }
-
+        this.circleManager.drawCircles(canvas);
     }
 
     private int getRealPixels(float dpi) {
@@ -126,18 +123,23 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 
 
     @Override
-    public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
+    public void surfaceChanged(SurfaceHolder holder, int format, int width,
+            int height) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder arg0) {
-        if (!engine.isAlive()) {
+        if ((engine == null) || !engine.isAlive()) {
             engine = new Engine(this);
             engine.setRunning(true);
             engine.start();
         }
+        
+        Rect frameRect = arg0.getSurfaceFrame();
+        circleManager = new GameCircleManager(frameRect, getResources());
+
     }
 
     @Override

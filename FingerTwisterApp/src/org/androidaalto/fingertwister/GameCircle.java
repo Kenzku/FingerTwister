@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
 
 /**
  * A game circle represents a valid circular region on the screen.
@@ -23,6 +24,16 @@ public class GameCircle {
 	
 	boolean pressed = false;	// if this circle is currently being pressed on the screen
 	
+	public boolean isPressed() {
+		return pressed;
+	}
+
+
+	public void setPressed(boolean pressed) {
+		this.pressed = pressed;
+	}
+
+
 	int color ; // the color of the game circle; how to render it is another thing
 	
 	public GameCircle(Point center, int radius, boolean pressed, int color, Resources resources) {
@@ -44,7 +55,7 @@ public class GameCircle {
 		double distance  = (center.x - aPoint.x) * (center.x - aPoint.x) + (center.y-aPoint.y)*(center.y - aPoint.y);
 		distance = Math.sqrt(distance);
 		
-		return (distance > radius);
+		return (distance < radius);
 	}
 
 	/**
@@ -56,9 +67,13 @@ public class GameCircle {
 
 		Bitmap image = getImage();
 		if (image != null) {
-			int bitmapLeft = center.x -image.getWidth()/2;
-			int bitmapTop = center.y - image.getHeight()/2;
-			canvas.drawBitmap(image, bitmapLeft, bitmapTop, null);
+			int bitmapLeft = center.x - radius;
+			int bitmapTop = center.y - radius;
+			
+			//TODO consider aspect ratio?
+			
+			Rect dstRect = new Rect(bitmapLeft, bitmapTop, bitmapLeft+2*radius, bitmapTop+2*radius);
+			canvas.drawBitmap(image, null, dstRect, null);
 		} 
 	}
 
