@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.os.Debug;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -46,6 +45,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         super(context);
     }
 
+	UserEventCallback userEventCallback;
+	
     public GamePanel(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -177,6 +178,17 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         mState = newState;
     }
 
+	public void setUserEventCallback(UserEventCallback uec)	{
+		this.userEventCallback = uec;
+	}
+	
+	public void notifyUserEvent(boolean success)	{
+		UserEvent event = new UserEvent(this, success);
+		if (userEventCallback != null)	{
+			userEventCallback.onUserEvent(event);
+		}
+	}
+
     /**
      * Represents current instruction.
      */
@@ -186,4 +198,5 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         public Color color;
 
     }
+
 }
