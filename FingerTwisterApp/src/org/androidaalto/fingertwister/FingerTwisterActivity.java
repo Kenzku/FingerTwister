@@ -93,7 +93,13 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
 
 	@Override
 	public void onUserEvent(UserEvent event) {
-				
+		boolean success = event.getSuccess();
+		if (success == true)	{
+			// get new instruction
+		}
+		else	{
+			// end game
+		}
 	}
     
     
