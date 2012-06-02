@@ -41,6 +41,11 @@ public class GameCircleManager {
 	}
 
 
+	/**
+	 * given a column, return the corresponding color
+	 * @param col
+	 * @return
+	 */
 	private int getColor(int col) {
 		switch(col){
 		case 1:
@@ -54,7 +59,6 @@ public class GameCircleManager {
 			
 		case 4:
 			return Color.RED;
-
 		}
 
 		throw new IllegalArgumentException("wrong column value! (1,2,3,4) are valid ones, but you supplied" + col);
@@ -104,7 +108,14 @@ public class GameCircleManager {
 	 * @return
 	 */
 	public GameCircle getTheCircle(int row, int column) {
-		return null;
+		
+		if (row <1 || row > 4) 
+			throw new IllegalArgumentException("wrong row number! " + row);
+		
+		if (column <1 || column > 4)
+			throw new IllegalArgumentException("wrong column number! " + column);
+		
+		return circles[row-1][column-1];
 	}
 	
 	
@@ -115,6 +126,15 @@ public class GameCircleManager {
 	 * 
 	 */
 	public GameCircle getAssociatedCircle(Point touchPoint) {
+		for (int row=1; row <=4; row++) {
+			for (int col=1; col<=4; col++) {
+				GameCircle gameCircle = circles[row-1][col-1];
+				if (gameCircle.isInsideCircle(touchPoint)) {
+					return gameCircle;
+				}
+			}
+		}
+		
 		return null;
 	}
 }

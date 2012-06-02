@@ -14,7 +14,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
-public class FingerTwisterActivity extends Activity {
+public class FingerTwisterActivity extends Activity implements UserEventCallback {
 
     private GamePanel gamePane;
 
@@ -28,6 +28,7 @@ public class FingerTwisterActivity extends Activity {
         setContentView(R.layout.main);
 
         gamePane = (GamePanel) findViewById(R.id.game_field);
+        gamePane.setUserEventCallback(this);
 
         // Add function to the restart button
         Button restart_btn = (Button) findViewById(R.id.restart_button);
@@ -89,5 +90,12 @@ public class FingerTwisterActivity extends Activity {
         logTouchEvent(event);
         return gamePane.onTouchEvent(event);
     }
+
+	@Override
+	public void onUserEvent(UserEvent event) {
+				
+	}
+    
+    
 
 }
