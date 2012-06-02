@@ -36,6 +36,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         mCurrTouchPoint = new PointInfo();
 
         engine = new Engine(this);
+        engine.start();
         circles = new ArrayList<GameCircle>();
         circles.add(new GameCircle(new Point(200, 200), 100, false, Color.GREEN, context.getResources()));
     }
