@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
+
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -13,8 +16,7 @@ import android.widget.FrameLayout;
 
 public class FingerTwisterActivity extends Activity {
 
-	GamePanel gamepanel;
-	
+    private GamePanel gamePane;
 
     /**
      * Called when the activity is first created.
@@ -25,19 +27,15 @@ public class FingerTwisterActivity extends Activity {
         
         setContentView(R.layout.main);
 
-        //TESTING
-        //layoutRoot = (FrameLayout) this.findViewById(R.id.GameViewRoot);
-        
+        gamePane = (GamePanel) findViewById(R.id.game_field);
+
         // Add function to the restart button
         Button restart_btn = (Button) findViewById(R.id.restart_button);
-        restart_btn.setOnClickListener(new OnClickListener() {
+        restart_btn.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View v)	{
         		// TODO: Restart the game
         	}
         });
-        
-        
-        
     }
 
 //    @Override
@@ -88,11 +86,8 @@ public class FingerTwisterActivity extends Activity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         logTouchEvent(event);
- 
-        return super.onTouchEvent(event);
+        return gamePane.onTouchEvent(event);
     }
-
 
 }

@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.util.TypedValue;
+import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -20,17 +21,22 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
 	
 	public GamePanel(Context context) {
 		super(context);
-		getHolder().addCallback(this);
-		
-		//colors -> get images
-		green = BitmapFactory.decodeResource(context.getResources(), R.drawable.green);
-		
-		engine = new Engine(this);
-		circles = new ArrayList<GameCircle>();
-		circles.add(new GameCircle(new Point(200,200), 100, false, null, green));
 	}
-	
-	public void update(){
+
+    public GamePanel(Context context, AttributeSet attrs) {
+        super(context, attrs);
+
+        getHolder().addCallback(this);
+
+        //colors -> get images
+        green = BitmapFactory.decodeResource(context.getResources(), R.drawable.green);
+
+        engine = new Engine(this);
+        circles = new ArrayList<GameCircle>();
+        circles.add(new GameCircle(new Point(200,200), 100, false, null, green));
+    }
+
+    public void update(){
 	
 		// Update gamelogic here (Will be called 25 times/second)
 		// detect user input
@@ -47,10 +53,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
 		for(GameCircle gc: circles){
 			gc.draw(canvas);
 		}
-		
-		
-		
-		
+
 	}
 	
 	private int getRealPixels(float dpi){
