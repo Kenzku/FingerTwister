@@ -1,19 +1,13 @@
 package org.androidaalto.fingertwister;
 
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 
 public class FingerTwisterActivity extends Activity {
 
-    private DemoSurface gamePane;
+    private GamePanel gamePane;
 
     /**
      * Called when the activity is first created.
@@ -23,7 +17,7 @@ public class FingerTwisterActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.main);
-        gamePane = (DemoSurface) findViewById(R.id.game_field);
+        gamePane = (GamePanel) findViewById(R.id.game_field);
     }
 
     /**
@@ -62,15 +56,8 @@ public class FingerTwisterActivity extends Activity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         logTouchEvent(event);
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            gamePane.setTouch((int) event.getX(), (int) event.getY());
-        } else {
-            gamePane.setTouch(0, 0);
-        }
-
-        return super.onTouchEvent(event);
+        return gamePane.onTouchEvent(event);
     }
 
 
