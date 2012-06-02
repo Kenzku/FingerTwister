@@ -28,6 +28,7 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
         setContentView(R.layout.main);
 
         gamePane = (GamePanel) findViewById(R.id.game_field);
+        gamePane.setUserEventCallback(this);
 
         // Add function to the restart button
         Button restart_btn = (Button) findViewById(R.id.restart_button);
