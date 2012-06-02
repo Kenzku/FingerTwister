@@ -1,5 +1,8 @@
 package org.androidaalto.fingertwister;
 
+import android.view.*;
+import org.androidaalto.fingertwister.GamePanel.Fingers;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -7,21 +10,18 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Button;
 
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 public class FingerTwisterActivity extends Activity implements UserEventCallback {
 
-	static final int DIALOG_GAME_OVER = 0;
-	
+    static final int DIALOG_GAME_OVER = 0;
+
     private GamePanel gamePane;
 
     /**
@@ -30,7 +30,8 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         setContentView(R.layout.main);
 
         gamePane = (GamePanel) findViewById(R.id.game_field);
@@ -39,9 +40,9 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
         // Add function to the restart button
         Button restart_btn = (Button) findViewById(R.id.restart_button);
         restart_btn.setOnClickListener(new View.OnClickListener() {
-        	public void onClick(View v)	{
-        		gamePane.startGame();
-        	}
+            public void onClick(View v) {
+                gamePane.startGame();
+            }
         });
     }
 
@@ -56,7 +57,7 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
 //        return super.onTouchEvent(event);
 //    }
 
- 
+
     /**
      * Prints event data (action and event coordinates) to android system log.
      * @param event Event to be logged.
@@ -93,50 +94,69 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        logTouchEvent(event);
+//        logTouchEvent(event);
         return gamePane.onTouchEvent(event);
     }
 
-	@Override
-	public void onUserEvent(UserEvent event) {
-		boolean success = event.getSuccess();
-		if (success == true)	{
-			// get new instruction
-		}
-		else	{
-			showDialog(DIALOG_GAME_OVER);
-		}
-	}
-    
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		Dialog dialog;
-		switch (id)	{
-		case DIALOG_GAME_OVER:
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage("Game over!")
-			       .setCancelable(false)
-			       .setPositiveButton("New Game", new DialogInterface.OnClickListener() {
-			           public void onClick(DialogInterface dialog, int id) {
-                           gamePane.startGame();
-			           }
-			       })
-			       .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
-			           public void onClick(DialogInterface dialog, int id) {
-			        	   Intent intent = new Intent(Intent.ACTION_MAIN);
-			        	   intent.addCategory(Intent.CATEGORY_HOME);
-			        	   intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			        	   startActivity(intent);
-			           }
-			       });
-			dialog = builder.create();
-			break;
-		default:
-			dialog = null;
-		}
-		
-		return dialog;
-	}
-    
+    @Override
+    public void onUserEvent(UserEvent event) {
+        boolean success = event.getSuccess();
+        if (success == true) {
+            GamePanel.Instruction currentInstruction = gamePane.getCurrentInstruction();
+
+            TextView colorTextView = (TextView) findViewById(R.id.instruction_color);
+            colorTextView.setBackgroundColor(currentInstruction.color);
+
+            TextView fingerTextView = (TextView) findViewById(R.id.instruction_finger);
+
+            switch (currentInstruction.finger) {
+                case INDEX:
+                    fingerTextView.setText(R.string.index_finger);
+                    break;
+                case MIDDLE:
+                    fingerTextView.setText(R.string.middle_finger);
+                    break;
+                case RING:
+                    fingerTextView.setText(R.string.ring_finger);
+                    break;
+                case LITTLE:
+                    fingerTextView.setText(R.string.little_finger);
+                    break;
+            }
+        } else {
+            showDialog(DIALOG_GAME_OVER);
+        }
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        Dialog dialog;
+        switch (id) {
+            case DIALOG_GAME_OVER:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Game over!")
+                        .setCancelable(false)
+                        .setPositiveButton("New Game", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                gamePane.startGame();
+                            }
+                        })
+                        .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent intent = new Intent(Intent.ACTION_MAIN);
+                                intent.addCategory(Intent.CATEGORY_HOME);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                            }
+                        });
+                dialog = builder.create();
+                break;
+            default:
+                dialog = null;
+        }
+
+        return dialog;
+    }
+
 
 }

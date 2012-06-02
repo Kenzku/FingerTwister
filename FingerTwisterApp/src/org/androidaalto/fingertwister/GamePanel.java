@@ -39,7 +39,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         WIN
     }
 
-    private enum Fingers {
+    public enum Fingers {
         THUMB,
         INDEX,
         MIDDLE,
@@ -211,6 +211,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         // TODO: notify activity or update something
         if (newState == GameState.GAME_OVER) {
             notifyUserEvent(false);
+        } else {
+            notifyUserEvent(true);
         }
     }
 
