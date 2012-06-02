@@ -4,6 +4,15 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
+
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.FrameLayout;
 
 public class FingerTwisterActivity extends Activity {
 
@@ -18,8 +27,28 @@ public class FingerTwisterActivity extends Activity {
 
         setContentView(R.layout.main);
         gamePane = (GamePanel) findViewById(R.id.game_field);
+
+        // Add function to the restart button
+        Button restart_btn = (Button) findViewById(R.id.restart_button);
+        restart_btn.setOnClickListener(new View.OnClickListener() {
+        	public void onClick(View v)	{
+        		// TODO: Restart the game
+        	}
+        });
     }
 
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//           // gamePane.setTouch((int) event.getX(), (int) event.getY());
+//        } else {
+//          //  gamePane.setTouch(0, 0);
+//        }
+//
+//        return super.onTouchEvent(event);
+//    }
+
+ 
     /**
      * Prints event data (action and event coordinates) to android system log.
      * @param event Event to be logged.
@@ -59,6 +88,5 @@ public class FingerTwisterActivity extends Activity {
         logTouchEvent(event);
         return gamePane.onTouchEvent(event);
     }
-
 
 }

@@ -5,7 +5,7 @@ import android.view.SurfaceHolder;
 
 public class Engine extends Thread{
 
-	// desired fps
+		// desired fps
 			private final int 	FPS = 25;
 			// the frame period
 			private final int	SKIP_TICKS = 1000 / FPS; //40
@@ -45,7 +45,7 @@ public class Engine extends Thread{
 							gPanel.draw(canvas);
 							nextGameTick+= SKIP_TICKS;
 							sleepTime = (int) (nextGameTick - System.currentTimeMillis());
-							if(sleepTime > 0)
+							if(sleepTime >= 0)
 							{
 								try{
 									sleep(sleepTime);
