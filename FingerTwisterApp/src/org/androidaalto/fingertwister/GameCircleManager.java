@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
 
 /**
  * manage all the circles used in this game panel
@@ -14,18 +15,18 @@ public class GameCircleManager {
 
 	GameCircle circles[][];
 	
-	Canvas theCanvas;
+	Rect canvasRect;
 	
 	Resources resources; // we need this to get the images
 
 	
-	public GameCircleManager(Canvas theCanvas, Resources resource) {
+	public GameCircleManager(Rect canvasRect, Resources resource) {
 		super();
-		this.theCanvas = theCanvas;
+		this.canvasRect = canvasRect;
 		this.resources = resource;
 
 		//TODO calculate the radius of the circle;
-		int radius = 100;
+		int radius = getRadius(canvasRect);
 		
 		// constructed the 4x4 array of circles;
 		circles = new GameCircle[4][4];
@@ -38,6 +39,21 @@ public class GameCircleManager {
 				
 			}
 		}
+	}
+
+
+	private int getRadius(Rect canvasRect2) {
+		int canvasHeight = canvasRect.height();
+		int canvasWidth = canvasRect.width();
+		
+		int radius = canvasHeight/8;
+		if (canvasHeight > canvasWidth) {
+			radius = canvasWidth/8;
+		}
+		
+		radius = (int)(radius * 0.5);
+		
+		return radius;
 	}
 
 
@@ -70,7 +86,7 @@ public class GameCircleManager {
 	 * draw all the circles managed by this manager
 	 * @param canvas
 	 */
-	public void drawCircles() {
+	public void drawCircles(Canvas theCanvas) {
 		
 		for (int row=1; row <=4; row++) {
 			for (int col=1; col<=4; col++) {
@@ -86,8 +102,8 @@ public class GameCircleManager {
 	 * @return
 	 */
 	private Point getCircleCenterCoordinates(int row, int column) {
-		int canvasHeight = theCanvas.getHeight();
-		int canvasWidth = theCanvas.getWidth();
+		int canvasHeight = canvasRect.height();
+		int canvasWidth = canvasRect.width();
 		
 		int averageHeightLength = canvasHeight/4;
 		int averageWidthLength = canvasWidth/4;

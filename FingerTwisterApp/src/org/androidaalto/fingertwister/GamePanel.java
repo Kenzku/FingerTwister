@@ -1,25 +1,26 @@
 package org.androidaalto.fingertwister;
 
+import org.metalev.multitouch.controller.MultiTouchController;
+import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import org.metalev.multitouch.controller.MultiTouchController;
-import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
-
-import java.util.ArrayList;
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         MultiTouchController.MultiTouchObjectCanvas<Object> {
 
     Engine engine;
-    ArrayList<GameCircle> circles;
-
+//    ArrayList<GameCircle> circles;
+    GameCircleManager circleManager;
+    
     private enum GameState {
         IDLE,
         WAITING_ACTION,
@@ -55,35 +56,31 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         mTouchController = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
 
-        engine = new Engine(this);
-        engine.start();
-        circles = new ArrayList<GameCircle>();
-        circles.add(new GameCircle(new Point(200, 200), 100, false, Color.GREEN, context.getResources()));
     }
 
     public void update() {
 
         // Update gamelogic here (Will be called 25 times/second)
         // detect user input
-        if (mCurrTouchPoint.isDown()) {
-            int numPoints = mCurrTouchPoint.getNumTouchPoints();
-            float[] xs = mCurrTouchPoint.getXs();
-            float[] ys = mCurrTouchPoint.getYs();
-            float[] pressures = mCurrTouchPoint.getPressures();
-            int[] pointerIds = mCurrTouchPoint.getPointerIds();
-            float x = mCurrTouchPoint.getX(), y = mCurrTouchPoint.getY();
-            float wd = getWidth(), ht = getHeight();
-
-            if (numPoints == 1) {
-                // Draw ordinate lines for single touch point
-                GameCircle newCircle = new GameCircle(new Point((int) x, (int) y),
-                        50, false, Color.RED, getResources());
-                synchronized (circles) {
-                    circles.add(newCircle);
-                }
-            }
-
-        }
+//        if (mCurrTouchPoint.isDown()) {
+//            int numPoints = mCurrTouchPoint.getNumTouchPoints();
+//            float[] xs = mCurrTouchPoint.getXs();
+//            float[] ys = mCurrTouchPoint.getYs();
+//            float[] pressures = mCurrTouchPoint.getPressures();
+//            int[] pointerIds = mCurrTouchPoint.getPointerIds();
+//            float x = mCurrTouchPoint.getX(), y = mCurrTouchPoint.getY();
+//            float wd = getWidth(), ht = getHeight();
+//
+//            if (numPoints == 1) {
+//                // Draw ordinate lines for single touch point
+//                GameCircle newCircle = new GameCircle(new Point((int) x, (int) y),
+//                        50, false, Color.RED, getResources());
+//                synchronized (circles) {
+//                    circles.add(newCircle);
+//                }
+//            }
+//
+//        }
     }
 
     @Override
@@ -95,15 +92,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         // Draw everything on the screen here (called 25times/second)
 
         //Draw the background (blue)
-        canvas.drawColor(Color.BLUE);
+        canvas.drawColor(Color.GRAY);
 
-        //TODO: iterate thru the list of circles and call .draw in them
-        synchronized (circles) {
-            for (GameCircle gc : circles) {
-                gc.draw(canvas);
-            }
-        }
-
+        this.circleManager.drawCircles(canvas);
     }
 
     private int getRealPixels(float dpi) {
@@ -113,18 +104,23 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 
 
     @Override
-    public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
+    public void surfaceChanged(SurfaceHolder holder, int format, int width,
+            int height) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder arg0) {
-        if (!engine.isAlive()) {
+        if ((engine == null) || !engine.isAlive()) {
             engine = new Engine(this);
             engine.setRunning(true);
             engine.start();
         }
+        
+        Rect frameRect = arg0.getSurfaceFrame();
+        circleManager = new GameCircleManager(frameRect, getResources());
+
     }
 
     @Override
