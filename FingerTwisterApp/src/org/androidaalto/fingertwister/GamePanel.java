@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.util.TypedValue;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -50,6 +51,11 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
 		
 		
 		
+	}
+	
+	private int getRealPixels(float dpi){
+		int value = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,(float) dpi, getResources().getDisplayMetrics());
+		return value;
 	}
 
 	

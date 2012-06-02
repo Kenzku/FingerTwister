@@ -14,7 +14,8 @@ import android.widget.FrameLayout;
 
 public class FingerTwisterActivity extends Activity {
 
-
+	GamePanel gamepanel;
+	
 
     /**
      * Called when the activity is first created.
@@ -22,10 +23,8 @@ public class FingerTwisterActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //TESTING
-        setContentView(new GamePanel(this));
-        //setContentView(R.layout.main);
+        
+        setContentView(R.layout.main);
         //layoutRoot = (FrameLayout) this.findViewById(R.id.GameViewRoot);
         
     }
