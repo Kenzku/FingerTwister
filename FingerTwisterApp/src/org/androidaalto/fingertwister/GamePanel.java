@@ -3,6 +3,7 @@ package org.androidaalto.fingertwister;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -21,12 +22,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
 		super(context);
 		getHolder().addCallback(this);
 		
-		//colors -> get images
-		green = BitmapFactory.decodeResource(context.getResources(), R.drawable.green);
+//		colors -> get images
+//		green = BitmapFactory.decodeResource(context.getResources(), R.drawable.green);
 		
 		engine = new Engine(this);
 		circles = new ArrayList<GameCircle>();
-		circles.add(new GameCircle(new Point(200,200), 100, false, null, green));
+//		GameCircle(Point center, int radius, boolean pressed, int color, Resources resources) 
+		circles.add(new GameCircle(new Point(200,200), 100, false, Color.GREEN, context.getResources()));
 	}
 	
 	public void update(){
