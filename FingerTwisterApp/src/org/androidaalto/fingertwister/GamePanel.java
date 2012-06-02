@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.os.Debug;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -20,8 +21,26 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
     Engine engine;
     ArrayList<GameCircle> circles;
 
+    private enum GameState {
+        IDLE,
+        WAITING_ACTION,
+        GAME_OVER,
+        WIN
+    }
+
+    private enum Fingers {
+        THUMB,
+        INDEX,
+        MIDDLE,
+        RING,
+        LITTLE
+    }
+
     private MultiTouchController<Object> mTouchController;
     private PointInfo mCurrTouchPoint;
+
+    private GameState mState;
+    private Instruction mCurrentInstruction;
 
     public GamePanel(Context context) {
         super(context);
@@ -152,5 +171,19 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         // Take a snapshot of touch point info, the touch point is volatile
         mCurrTouchPoint.set(touchPoint);
         update();
+    }
+
+    private void updateGameState(GameState newState) {
+        mState = newState;
+    }
+
+    /**
+     * Represents current instruction.
+     */
+    private class Instruction {
+
+        public Fingers finger;
+        public Color color;
+
     }
 }
