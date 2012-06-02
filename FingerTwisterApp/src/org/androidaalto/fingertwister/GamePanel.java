@@ -19,6 +19,8 @@ import java.util.Random;
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         MultiTouchController.MultiTouchObjectCanvas<Object> {
 
+    private static final int MAX_FINGERS = 5;
+
     Engine engine;
     ArrayList<GameCircle> circles;
     Random randomNumberGenerator;
@@ -49,23 +51,33 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         super(context);
     }
 
-	UserEventCallback userEventCallback;
-	
+    UserEventCallback userEventCallback;
+
     public GamePanel(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         getHolder().addCallback(this);
-        
-        this.randomNumberGenerator = new Random();
 
+        this.randomNumberGenerator = new Random();
         mTouchController = new MultiTouchController<Object>(this);
+    }
+
+    /**
+     * Initializes view.
+     */
+    private void init() {
         mCurrTouchPoint = new PointInfo();
         mInstructionHistory = new ArrayList<Instruction>();
 
         engine = new Engine(this);
+        engine.setRunning(true);
         engine.start();
+
         circles = new ArrayList<GameCircle>();
-        circles.add(new GameCircle(new Point(200, 200), 100, false, Color.GREEN, context.getResources()));
+        circles.add(new GameCircle(new Point(200, 200), 100, false, Color.GREEN, getResources()));
+
+        generateNextInstruction();
+        updateGameState(GameState.WAITING_ACTION);
     }
 
     public Instruction getCurrentInstruction() {
@@ -76,7 +88,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 
         // Update gamelogic here (Will be called 25 times/second)
         // detect user input
-        if (mCurrTouchPoint.isDown()) {
+        if (mState == GameState.WAITING_ACTION && mCurrTouchPoint.isDown()) {
             int index = mCurrTouchPoint.getNumTouchPoints() - 1;
             float[] xs = mCurrTouchPoint.getXs();
             float[] ys = mCurrTouchPoint.getYs();
@@ -88,14 +100,18 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
             // Check if matches current instruction
             if (matchTouchToInstruction((int) xs[index], (int) ys[index])) {
                 // Store it in instructions
-                mInstructionHistory.add(mCurrentInstruction);
-//  TODO:              mCurrentInstruction = generateNextInstruction();
-                notifyUserEvent(true);
+                if (index >= MAX_FINGERS - 1) {
+                    updateGameState(GameState.WIN);
+                } else {
+                    mInstructionHistory.add(mCurrentInstruction);
+                    generateNextInstruction();
+                    notifyUserEvent(true);
+                }
             } else {
-                notifyUserEvent(false);
+                updateGameState(GameState.GAME_OVER);
             }
         } else if (mCurrTouchPoint.getAction() == MotionEvent.ACTION_UP) {
-            notifyUserEvent(false);
+            updateGameState(GameState.GAME_OVER);
         }
     }
 
@@ -124,7 +140,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         return value;
     }
 
-
     @Override
     public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
         // TODO Auto-generated method stub
@@ -133,17 +148,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 
     @Override
     public void surfaceCreated(SurfaceHolder arg0) {
-        if (!engine.isAlive()) {
-            engine = new Engine(this);
-            engine.setRunning(true);
-            engine.start();
-        }
+        mState = GameState.IDLE;
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder arg0) {
-        if (engine.isAlive())
+        if (engine.isAlive()) {
             engine.setRunning(false);
+        }
     }
 
 
@@ -178,7 +190,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 
     /**
      * Called when the touch point info changes, causes a redraw.
-     *
      * @param touchPoint
      */
     private void touchPointChanged(PointInfo touchPoint) {
@@ -191,7 +202,17 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         mState = newState;
 
         // TODO: notify activity or update something
+        if (newState == GameState.GAME_OVER) {
+            notifyUserEvent(false);
+        }
     }
+
+    public void startGame() {
+        if (mState == GameState.WAITING_ACTION) {
+            init();
+        }
+    }
+
 
     private boolean matchTouchToInstruction(int x, int y) {
         boolean result = false;
@@ -205,45 +226,44 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         return result;
     }
 
-	public void setUserEventCallback(UserEventCallback uec)	{
-		this.userEventCallback = uec;
-	}
-	
-	public void notifyUserEvent(boolean success)	{
-		UserEvent event = new UserEvent(this, success);
-		if (userEventCallback != null)	{
-			userEventCallback.onUserEvent(event);
-		}
-	}
-	
-	public void generateNextInstruction()	{
-		Instruction newInstruction = new Instruction();
-		
-		newInstruction.finger = Fingers.values()[randomNumberGenerator.nextInt(5)];
-				
-		switch (randomNumberGenerator.nextInt(4))	{
-		case 0:
-			newInstruction.color = Color.RED;
-			break;
-		case 1:
-			newInstruction.color = Color.BLUE;
-			break;
-		case 2:
-			newInstruction.color = Color.GREEN;
-			break;
-		case 3:
-			newInstruction.color = Color.YELLOW;
-			break;
-		}
-		
-		mCurrentInstruction = newInstruction;
-		
-	}
+    public void setUserEventCallback(UserEventCallback uec) {
+        this.userEventCallback = uec;
+    }
+
+    public void notifyUserEvent(boolean success) {
+        UserEvent event = new UserEvent(this, success);
+        if (userEventCallback != null) {
+            userEventCallback.onUserEvent(event);
+        }
+    }
+
+    public void generateNextInstruction() {
+        Instruction newInstruction = new Instruction();
+
+        newInstruction.finger = Fingers.values()[randomNumberGenerator.nextInt(5)];
+
+        switch (randomNumberGenerator.nextInt(4)) {
+            case 0:
+                newInstruction.color = Color.RED;
+                break;
+            case 1:
+                newInstruction.color = Color.BLUE;
+                break;
+            case 2:
+                newInstruction.color = Color.GREEN;
+                break;
+            case 3:
+                newInstruction.color = Color.YELLOW;
+                break;
+        }
+
+        mCurrentInstruction = newInstruction;
+    }
 
     /**
      * Represents current instruction.
      */
-    private class Instruction {
+    public class Instruction {
 
         public Fingers finger;
         public int color;
