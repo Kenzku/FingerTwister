@@ -82,7 +82,18 @@ public class GameCircleManager {
 	 * @return
 	 */
 	private Point getCircleCenterCoordinates(int row, int column) {
-		return null;
+		int canvasHeight = theCanvas.getHeight();
+		int canvasWidth = theCanvas.getWidth();
+		
+		int averageHeightLength = canvasHeight/4;
+		int averageWidthLength = canvasWidth/4;
+		
+		int centreX = (column-1) * averageWidthLength + averageWidthLength/2;
+		int centreY = (row - 1) * averageHeightLength + averageHeightLength/2;
+		
+		Point point = new Point(centreX,centreY);
+		
+		return point;
 	}
 	
 	/**
