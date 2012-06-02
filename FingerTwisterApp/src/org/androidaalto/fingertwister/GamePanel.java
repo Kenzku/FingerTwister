@@ -14,9 +14,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import org.metalev.multitouch.controller.MultiTouchController;
-import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -105,7 +102,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
             float wd = getWidth(), ht = getHeight();
 
             // Check if matches current instruction
-            if (matchTouchToInstruction((int) xs[index], (int) ys[index])) {
+            if (matchTouchToInstructionAndSetActive((int) xs[index], (int) ys[index])) {
                 // Store it in instructions
                 if (index >= MAX_FINGERS - 1) {
                     updateGameState(GameState.WIN);
@@ -223,11 +220,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
     }
 
 
-    private boolean matchTouchToInstruction(int x, int y) {
+    private boolean matchTouchToInstructionAndSetActive(int x, int y) {
         boolean result = false;
 
         GameCircle circle = circleManager.getAssociatedCircle(new Point(x, y));
         if (circle != null && circle.color == mCurrentInstruction.color) {
+            circle.setPressed(true);
             result = true;
         }
 
