@@ -66,7 +66,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
 		if(!engine.isAlive()){
 			engine = new Engine(this);
 			engine.setRunning(true);
-			engine.run();
+			engine.start();
 		}
 	}
 

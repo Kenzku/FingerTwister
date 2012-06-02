@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.widget.FrameLayout;
 
 public class FingerTwisterActivity extends Activity {
 
-    private DemoSurface gamePane;
+
 
     /**
      * Called when the activity is first created.
@@ -16,10 +19,25 @@ public class FingerTwisterActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.main);
-        gamePane = (DemoSurface) findViewById(R.id.game_field);
+        //TESTING
+        setContentView(new GamePanel(this));
+        //setContentView(R.layout.main);
+        //layoutRoot = (FrameLayout) this.findViewById(R.id.GameViewRoot);
+        
     }
 
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//           // gamePane.setTouch((int) event.getX(), (int) event.getY());
+//        } else {
+//          //  gamePane.setTouch(0, 0);
+//        }
+//
+//        return super.onTouchEvent(event);
+//    }
+
+ 
     /**
      * Prints event data (action and event coordinates) to android system log.
      * @param event Event to be logged.
@@ -58,12 +76,7 @@ public class FingerTwisterActivity extends Activity {
     public boolean onTouchEvent(MotionEvent event) {
 
         logTouchEvent(event);
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            gamePane.setTouch((int) event.getX(), (int) event.getY());
-        } else {
-            gamePane.setTouch(0, 0);
-        }
-
+ 
         return super.onTouchEvent(event);
     }
 
