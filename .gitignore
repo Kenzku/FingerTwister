@@ -21,3 +21,6 @@ local.properties
 *.iml
 out/
 classes/
+.classpath
+.project
+.settings/
