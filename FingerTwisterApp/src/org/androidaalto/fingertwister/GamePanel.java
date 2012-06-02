@@ -13,6 +13,7 @@ import org.metalev.multitouch.controller.MultiTouchController;
 import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         MultiTouchController.MultiTouchObjectCanvas<Object> {
@@ -40,6 +41,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 
     private GameState mState;
     private Instruction mCurrentInstruction;
+    private List<Instruction> mInstructionHistory;
 
     public GamePanel(Context context) {
         super(context);
@@ -54,6 +56,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 
         mTouchController = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
+        mInstructionHistory = new ArrayList<Instruction>();
 
         engine = new Engine(this);
         engine.start();
@@ -61,12 +64,16 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         circles.add(new GameCircle(new Point(200, 200), 100, false, Color.GREEN, context.getResources()));
     }
 
+    public Instruction getCurrentInstruction() {
+        return mCurrentInstruction;
+    }
+
     public void update() {
 
         // Update gamelogic here (Will be called 25 times/second)
         // detect user input
         if (mCurrTouchPoint.isDown()) {
-            int numPoints = mCurrTouchPoint.getNumTouchPoints();
+            int index = mCurrTouchPoint.getNumTouchPoints() - 1;
             float[] xs = mCurrTouchPoint.getXs();
             float[] ys = mCurrTouchPoint.getYs();
             float[] pressures = mCurrTouchPoint.getPressures();
@@ -74,15 +81,17 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
             float x = mCurrTouchPoint.getX(), y = mCurrTouchPoint.getY();
             float wd = getWidth(), ht = getHeight();
 
-            if (numPoints == 1) {
-                // Draw ordinate lines for single touch point
-                GameCircle newCircle = new GameCircle(new Point((int) x, (int) y),
-                        50, false, Color.RED, getResources());
-                synchronized (circles) {
-                    circles.add(newCircle);
-                }
+            // Check if matches current instruction
+            if (matchTouchToInstruction((int) xs[index], (int) ys[index])) {
+                // Store it in instructions
+                mInstructionHistory.add(mCurrentInstruction);
+//  TODO:              mCurrentInstruction = generateNextInstruction();
+                notifyUserEvent(true);
+            } else {
+                notifyUserEvent(false);
             }
-
+        } else if (mCurrTouchPoint.getAction() == MotionEvent.ACTION_UP) {
+            notifyUserEvent(false);
         }
     }
 
@@ -176,6 +185,20 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 
     private void updateGameState(GameState newState) {
         mState = newState;
+
+        // TODO: notify activity or update something
+    }
+
+    private boolean matchTouchToInstruction(int x, int y) {
+        boolean result = false;
+
+        // TODO: call game circle manager
+        GameCircle circle = new GameCircle(new Point(x, y), 50, false, Color.RED, getResources());
+        if (circle != null && circle.color == mCurrentInstruction.color) {
+            result = true;
+        }
+
+        return result;
     }
 
 	public void setUserEventCallback(UserEventCallback uec)	{
@@ -195,7 +218,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
     private class Instruction {
 
         public Fingers finger;
-        public Color color;
+        public int color;
 
     }
 
