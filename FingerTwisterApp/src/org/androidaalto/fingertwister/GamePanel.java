@@ -1,14 +1,19 @@
 package org.androidaalto.fingertwister;
 
+import org.metalev.multitouch.controller.MultiTouchController;
+import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
 import org.metalev.multitouch.controller.MultiTouchController;
 import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
 
@@ -16,13 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         MultiTouchController.MultiTouchObjectCanvas<Object> {
 
     private static final int MAX_FINGERS = 5;
 
     Engine engine;
-    ArrayList<GameCircle> circles;
+    GameCircleManager circleManager;
+    
     Random randomNumberGenerator;
 
     private enum GameState {
@@ -73,8 +80,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         engine.setRunning(true);
         engine.start();
 
-        circles = new ArrayList<GameCircle>();
-        circles.add(new GameCircle(new Point(200, 200), 100, false, Color.GREEN, getResources()));
+        Rect frameRect = getHolder().getSurfaceFrame();
+        circleManager = new GameCircleManager(frameRect, getResources());
 
         generateNextInstruction();
         updateGameState(GameState.WAITING_ACTION);
@@ -110,29 +117,28 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
             } else {
                 updateGameState(GameState.GAME_OVER);
             }
-        } else if (mCurrTouchPoint.getAction() == MotionEvent.ACTION_UP) {
-            updateGameState(GameState.GAME_OVER);
         }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return mTouchController.onTouchEvent(event);
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_POINTER_UP:
+            case MotionEvent.ACTION_UP:
+                updateGameState(GameState.GAME_OVER);
+                return true;
+            default:
+                return mTouchController.onTouchEvent(event);
+        }
     }
 
     public void draw(Canvas canvas) {
         // Draw everything on the screen here (called 25times/second)
 
         //Draw the background (blue)
-        canvas.drawColor(Color.BLUE);
+        canvas.drawColor(Color.GRAY);
 
-        //TODO: iterate thru the list of circles and call .draw in them
-        synchronized (circles) {
-            for (GameCircle gc : circles) {
-                gc.draw(canvas);
-            }
-        }
-
+        this.circleManager.drawCircles(canvas);
     }
 
     private int getRealPixels(float dpi) {
@@ -141,7 +147,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
+    public void surfaceChanged(SurfaceHolder holder, int format, int width,
+            int height) {
         // TODO Auto-generated method stub
 
     }
@@ -208,7 +215,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
     }
 
     public void startGame() {
-        if (mState == GameState.WAITING_ACTION) {
+        if (mState != GameState.WAITING_ACTION) {
             init();
         }
     }
@@ -217,8 +224,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
     private boolean matchTouchToInstruction(int x, int y) {
         boolean result = false;
 
-        // TODO: call game circle manager
-        GameCircle circle = new GameCircle(new Point(x, y), 50, false, Color.RED, getResources());
+        GameCircle circle = circleManager.getAssociatedCircle(new Point(x, y));
         if (circle != null && circle.color == mCurrentInstruction.color) {
             result = true;
         }

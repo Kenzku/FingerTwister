@@ -1,6 +1,10 @@
 package org.androidaalto.fingertwister;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -16,6 +20,8 @@ import android.widget.FrameLayout;
 
 public class FingerTwisterActivity extends Activity implements UserEventCallback {
 
+	static final int DIALOG_GAME_OVER = 0;
+	
     private GamePanel gamePane;
 
     /**
@@ -34,7 +40,7 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
         Button restart_btn = (Button) findViewById(R.id.restart_button);
         restart_btn.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View v)	{
-        		// TODO: Restart the game
+        		gamePane.startGame();
         	}
         });
     }
@@ -98,10 +104,39 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
 			// get new instruction
 		}
 		else	{
-			// end game
+			showDialog(DIALOG_GAME_OVER);
 		}
 	}
     
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		Dialog dialog;
+		switch (id)	{
+		case DIALOG_GAME_OVER:
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage("Game over!")
+			       .setCancelable(false)
+			       .setPositiveButton("New Game", new DialogInterface.OnClickListener() {
+			           public void onClick(DialogInterface dialog, int id) {
+                           gamePane.startGame();
+			           }
+			       })
+			       .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+			           public void onClick(DialogInterface dialog, int id) {
+			        	   Intent intent = new Intent(Intent.ACTION_MAIN);
+			        	   intent.addCategory(Intent.CATEGORY_HOME);
+			        	   intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			        	   startActivity(intent);
+			           }
+			       });
+			dialog = builder.create();
+			break;
+		default:
+			dialog = null;
+		}
+		
+		return dialog;
+	}
     
 
 }

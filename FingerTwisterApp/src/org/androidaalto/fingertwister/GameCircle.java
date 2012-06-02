@@ -44,12 +44,12 @@ public class GameCircle {
 		double distance  = (center.x - aPoint.x) * (center.x - aPoint.x) + (center.y-aPoint.y)*(center.y - aPoint.y);
 		distance = Math.sqrt(distance);
 		
-		return (distance > radius);
+		return (distance < radius);
 	}
 
 	/**
 	 * draw itself on the given canvas
-	 * @param theCanvas
+	 * @param canvas
 	 */
 	public void draw(Canvas canvas) {
 		// canvas.drawBitmap(image, leftTopPoint.x, leftTopPoint.y, null);
