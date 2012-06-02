@@ -14,12 +14,14 @@ import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         MultiTouchController.MultiTouchObjectCanvas<Object> {
 
     Engine engine;
     ArrayList<GameCircle> circles;
+    Random randomNumberGenerator;
 
     private enum GameState {
         IDLE,
@@ -53,6 +55,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         super(context, attrs);
 
         getHolder().addCallback(this);
+        
+        this.randomNumberGenerator = new Random();
 
         mTouchController = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
@@ -210,6 +214,30 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 		if (userEventCallback != null)	{
 			userEventCallback.onUserEvent(event);
 		}
+	}
+	
+	public void generateNextInstruction()	{
+		Instruction newInstruction = new Instruction();
+		
+		newInstruction.finger = Fingers.values()[randomNumberGenerator.nextInt(5)];
+				
+		switch (randomNumberGenerator.nextInt(4))	{
+		case 0:
+			newInstruction.color = Color.RED;
+			break;
+		case 1:
+			newInstruction.color = Color.BLUE;
+			break;
+		case 2:
+			newInstruction.color = Color.GREEN;
+			break;
+		case 3:
+			newInstruction.color = Color.YELLOW;
+			break;
+		}
+		
+		mCurrentInstruction = newInstruction;
+		
 	}
 
     /**
