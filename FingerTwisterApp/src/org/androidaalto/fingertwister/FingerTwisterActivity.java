@@ -23,8 +23,8 @@ public class FingerTwisterActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         //TESTING
-        //setContentView(new GamePanel(this));
-        setContentView(R.layout.main);
+        setContentView(new GamePanel(this));
+        // setContentView(R.layout.main);
         //layoutRoot = (FrameLayout) this.findViewById(R.id.GameViewRoot);
         
         // Add function to the restart button
