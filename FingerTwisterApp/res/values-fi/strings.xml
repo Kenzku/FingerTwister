@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">FingerTwisterApp</string>
+    <string name="restart_button">Uusi peli</string>
     
+    <!-- Fingers -->
+    <string name="thumb">Peukalo</string>
+    <string name="index_finger">Etusormi</string>
+    <string name="middle_finger">Keskisormi</string>
+    <string name="ring_finger">Nimetön</string>
+    <string name="little_finger">Pikkusormi</string>
 </resources>
