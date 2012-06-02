@@ -22,8 +22,8 @@ public class FingerTwisterActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        gamePane = new DemoSurface(this);
-        setContentView(gamePane);
+        setContentView(R.layout.main);
+        gamePane = (DemoSurface) findViewById(R.id.game_field);
     }
 
     /**

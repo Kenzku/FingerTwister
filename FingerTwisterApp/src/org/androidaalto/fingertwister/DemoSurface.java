@@ -19,22 +19,6 @@ import android.view.SurfaceView;
  */
 public class DemoSurface extends SurfaceView implements SurfaceHolder.Callback {
 
-    public DemoSurface(Context context) {
-        super(context);
-
-        getHolder().addCallback(this);
-        _thread = new TutorialThread(getHolder(), this);
-    }
-
-    public DemoSurface(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public DemoSurface(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-    }
-
-
     private TutorialThread _thread;
 
     public static final int RADIUS = 60;
@@ -42,6 +26,20 @@ public class DemoSurface extends SurfaceView implements SurfaceHolder.Callback {
     private int touchPointX;
     private int touchPointY;
 
+    public DemoSurface(Context context) {
+        super(context);
+    }
+
+    public DemoSurface(Context context, AttributeSet attrs) {
+        super(context, attrs);
+
+        getHolder().addCallback(this);
+        _thread = new TutorialThread(getHolder(), this);
+    }
+
+    public DemoSurface(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
 
     public void setTouch(int x, int y) {
         touchPointX = x;
@@ -89,42 +87,44 @@ public class DemoSurface extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
     }
-}
 
-class TutorialThread extends Thread {
+    class TutorialThread extends Thread {
 
-    private SurfaceHolder _surfaceHolder;
-    private DemoSurface _panel;
-    private boolean _run = false;
+        private SurfaceHolder _surfaceHolder;
+        private DemoSurface _panel;
+        private boolean _run = false;
 
-    public TutorialThread(SurfaceHolder surfaceHolder, DemoSurface panel) {
-        _surfaceHolder = surfaceHolder;
-        _panel = panel;
-    }
+        public TutorialThread(SurfaceHolder surfaceHolder, DemoSurface panel) {
+            _surfaceHolder = surfaceHolder;
+            _panel = panel;
+        }
 
-    public void setRunning(boolean run) {
-        _run = run;
-    }
+        public void setRunning(boolean run) {
+            _run = run;
+        }
 
-    @Override
-    public void run() {
-        Canvas c;
-        while (_run) {
-            c = null;
-            try {
-                c = _surfaceHolder.lockCanvas(null);
-                synchronized (_surfaceHolder) {
-                    _panel.onDraw(c);
-                }
-            } finally {
-                // do this in a finally so that if an exception is thrown
-                // during the above, we don't leave the Surface in an
-                // inconsistent state
-                if (c != null) {
-                    _surfaceHolder.unlockCanvasAndPost(c);
+        @Override
+        public void run() {
+            Canvas c;
+            while (_run) {
+                c = null;
+                try {
+                    c = _surfaceHolder.lockCanvas(null);
+                    synchronized (_surfaceHolder) {
+                        _panel.onDraw(c);
+                    }
+                } finally {
+                    // do this in a finally so that if an exception is thrown
+                    // during the above, we don't leave the Surface in an
+                    // inconsistent state
+                    if (c != null) {
+                        _surfaceHolder.unlockCanvasAndPost(c);
+                    }
                 }
             }
         }
+
     }
 
 }
+
