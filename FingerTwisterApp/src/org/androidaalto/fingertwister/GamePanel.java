@@ -18,6 +18,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
 
 	Engine engine;
 	ArrayList <GameCircle> circles;
+	UserEventCallback uec;
 	
 	public GamePanel(Context context) {
 		super(context);
@@ -84,6 +85,15 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
 	}
 
 	
+	public void setUserEventCallback(UserEventCallback uec)	{
+		this.uec = uec;
+	}
 	
+	public void notifyUserEvent(boolean success)	{
+		UserEvent event = new UserEvent(this, success);
+		if (uec != null)	{
+			uec.onUserEvent(event);
+		}
+	}
 	
 }

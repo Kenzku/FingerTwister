@@ -14,7 +14,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
-public class FingerTwisterActivity extends Activity {
+public class FingerTwisterActivity extends Activity implements UserEventCallback {
 
     private GamePanel gamePane;
 
@@ -89,5 +89,12 @@ public class FingerTwisterActivity extends Activity {
         logTouchEvent(event);
         return gamePane.onTouchEvent(event);
     }
+
+	@Override
+	public void onUserEvent(UserEvent event) {
+				
+	}
+    
+    
 
 }
