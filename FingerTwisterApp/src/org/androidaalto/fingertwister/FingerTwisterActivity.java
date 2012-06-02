@@ -18,9 +18,9 @@ public class FingerTwisterActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        gamePane = new Panel(this);
-        setContentView(gamePane);
+        
+        setContentView(R.layout.main);
+        
     }
 
     @Override
