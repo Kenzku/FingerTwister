@@ -1,5 +1,9 @@
 package org.androidaalto.fingertwister;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import org.metalev.multitouch.controller.MultiTouchController;
 import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
 
@@ -13,10 +17,6 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
