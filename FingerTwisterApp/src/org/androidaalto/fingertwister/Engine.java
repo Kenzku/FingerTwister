@@ -37,7 +37,9 @@ public class Engine extends Thread {
                 canvas = sHolder.lockCanvas();
                 synchronized (sHolder) {
 //                    gPanel.update();
-                    gPanel.draw(canvas);
+                	if (canvas != null) {
+                        gPanel.draw(canvas);                		
+                	}
                     nextGameTick += SKIP_TICKS;
                     sleepTime = (int) (nextGameTick - System.currentTimeMillis());
                     if (sleepTime >= 0) {

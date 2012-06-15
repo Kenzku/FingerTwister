@@ -50,7 +50,7 @@ public class GameCircleManager {
 			radius = canvasWidth/8;
 		}
 		
-		radius = (int)(radius * 0.8);
+		radius = (int)(radius * 1);
 		
 		return radius;
 	}
@@ -151,5 +151,19 @@ public class GameCircleManager {
 		}
 		
 		return null;
+	}
+	
+	public int getNumTouchedCircle() {
+		int counter = 0;
+		for (int row = 0; row <circles.length; row++) {
+			for (int col = 0; col < circles[row].length; col++) {
+				if (circles[row][col].isPressed()) {
+					counter ++;
+				}
+			}
+		}
+		
+		return counter;
+		
 	}
 }

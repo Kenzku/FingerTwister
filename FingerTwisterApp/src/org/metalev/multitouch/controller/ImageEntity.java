@@ -7,23 +7,10 @@
  */
 package org.metalev.multitouch.controller;
 
-import android.graphics.drawable.Drawable;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.BitmapFactory;
-import android.graphics.Bitmap;
-
-import android.content.res.Resources;
 import android.content.Context;
-
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-
-import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
+import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 
 public class ImageEntity extends MultiTouchEntity {
 

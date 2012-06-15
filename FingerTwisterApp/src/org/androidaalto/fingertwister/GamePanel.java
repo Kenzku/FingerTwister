@@ -1,5 +1,9 @@
 package org.androidaalto.fingertwister;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import org.metalev.multitouch.controller.MultiTouchController;
 import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
 
@@ -9,19 +13,18 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         MultiTouchController.MultiTouchObjectCanvas<Object> {
 
+	private static final String LOG_TAG = "FingerTwister";
+	
     private static final int MAX_FINGERS = 5;
 
     Engine engine;
@@ -93,29 +96,114 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         // Update gamelogic here (Will be called 25 times/second)
         // detect user input
         if (mState == GameState.WAITING_ACTION && mCurrTouchPoint.isDown()) {
-            int index = mCurrTouchPoint.getNumTouchPoints() - 1;
-            float[] xs = mCurrTouchPoint.getXs();
-            float[] ys = mCurrTouchPoint.getYs();
-            float[] pressures = mCurrTouchPoint.getPressures();
-            int[] pointerIds = mCurrTouchPoint.getPointerIds();
-            float x = mCurrTouchPoint.getX(), y = mCurrTouchPoint.getY();
-            float wd = getWidth(), ht = getHeight();
-
-            // Check if matches current instruction
-            if (matchTouchToInstructionAndSetActive((int) xs[index], (int) ys[index])) {
-                // Store it in instructions
-                if (index >= MAX_FINGERS - 1) {
-                    updateGameState(GameState.WIN);
-                } else {
-                    mInstructionHistory.add(mCurrentInstruction);
-                    generateNextInstruction();
-                    notifyUserEvent(true);
-                }
-            } else {
-                updateGameState(GameState.GAME_OVER);
-            }
+        	
+        	if (isUserDoingOK()) {
+        		
+        		
+        		if (circleManager.getNumTouchedCircle() == mCurrTouchPoint.getNumTouchPoints() ) {
+        			// nothing interesting. because nothing changed
+        			return;
+        		}
+        		
+        		// save the current touching points in the corresponding game circles
+        		saveCurrentTouchingState(mCurrTouchPoint);
+        		
+        		if (mCurrTouchPoint.getNumTouchPoints() == MAX_FINGERS ) {
+        			Log.i(LOG_TAG, "max number of fingers are used. You win!");
+        			updateGameState(GameState.WIN);
+        		}
+        		else {
+	        		// generate new instruction
+	                generateNextInstruction();
+	                
+	                // update the screen accordingly and waiting for user input
+	                notifyUserEvent(UserEvent.UserState.Proceeding);
+        		}
+        		
+        	} else {
+            	Log.i(LOG_TAG, "finger position doesn't match instructiions!");
+            	
+                updateGameState(GameState.GAME_OVER);        		
+        	}
+        	
+//        	
+//        	
+//        	
+//            int index = mCurrTouchPoint.getNumTouchPoints() - 1;
+//            float[] xs = mCurrTouchPoint.getXs();
+//            float[] ys = mCurrTouchPoint.getYs();
+//            float[] pressures = mCurrTouchPoint.getPressures();
+//            int[] pointerIds = mCurrTouchPoint.getPointerIds();
+//            float x = mCurrTouchPoint.getX(), y = mCurrTouchPoint.getY();
+//            float wd = getWidth(), ht = getHeight();
+//
+//            // Check if matches current instruction
+//            if (matchTouchToInstructionAndSetActive((int) xs[index], (int) ys[index])) {
+//                // Store it in instructions
+//                if (index >= MAX_FINGERS - 1) {
+//                    updateGameState(GameState.WIN);
+//                } else {
+//                	// save the instruction 
+//                    mInstructionHistory.add(mCurrentInstruction);
+//
+//                    generateNextInstruction();
+//                    // update the screen and waiting for user input
+//                    notifyUserEvent(true);
+//                }
+//            } else {
+//            	Log.i(LOG_TAG, "finger position doesn't match instructiions!");
+//            	
+//                updateGameState(GameState.GAME_OVER);
+//            }
         }
     }
+
+    
+    /**
+     * Save the touching points info to circleManager
+     * @param touchingPointsInfo
+     */
+	private void saveCurrentTouchingState(PointInfo touchingPointsInfo) {
+		
+		for (int pointerIdx = 0; pointerIdx <touchingPointsInfo.getNumTouchPoints(); pointerIdx ++) {
+			// check all the current touchpoints are either within the already pressed circle or matching the current instruction
+			float x = touchingPointsInfo.getXs()[pointerIdx];
+			float y = touchingPointsInfo.getYs()[pointerIdx];
+			Point touchPoint = new Point((int)x, (int)y);
+			GameCircle gameCircle = circleManager.getAssociatedCircle(touchPoint);
+			gameCircle.setPressed(true);
+		}		
+	}
+
+	private boolean isUserDoingOK() {
+		// check if the current finger positions are in line with the instructions
+		for (int pointerIdx = 0; pointerIdx <mCurrTouchPoint.getNumTouchPoints(); pointerIdx ++) {
+			// check all the current touchpoints are either within the already pressed circle or matching the current instruction
+			float x = mCurrTouchPoint.getXs()[pointerIdx];
+			float y = mCurrTouchPoint.getYs()[pointerIdx];
+			Point touchPoint = new Point((int)x, (int)y);
+			GameCircle gameCircle = circleManager.getAssociatedCircle(touchPoint);
+			
+			if (null == gameCircle) {
+				Log.i(LOG_TAG, "your finger position is outside all the circles!");
+				return false;
+			}
+			if (gameCircle.isPressed()) {
+				// Yes, this is expected
+				continue;
+			} else {
+				// check if this new touch point matches current instruction
+				if (gameCircle.color == mCurrentInstruction.color) {
+					// OK, it is expected that user's new finger touches here
+					
+				} else {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -198,19 +286,40 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
      */
     private void touchPointChanged(PointInfo touchPoint) {
         // Take a snapshot of touch point info, the touch point is volatile
-        mCurrTouchPoint.set(touchPoint);
+    	if (mCurrTouchPoint == null) {
+    		mCurrTouchPoint = touchPoint;
+    	} else {
+    		mCurrTouchPoint.set(touchPoint);
+    	}
         update();
     }
 
     private void updateGameState(GameState newState) {
-        mState = newState;
+    	
+    	if (newState == GameState.GAME_OVER) {
+    		if (mState == GameState.WIN || mState == GameState.GAME_OVER) {
+    			// I'm in the middle of handling some final state
+    			return;
+    		}
+    	}
 
-        // TODO: notify activity or update something
-        if (newState == GameState.GAME_OVER) {
-            notifyUserEvent(false);
-        } else {
-            notifyUserEvent(true);
+    	mState = newState;
+
+        switch(newState) {
+        case GAME_OVER:
+            notifyUserEvent(UserEvent.UserState.Lose);
+            return;
+
+        case IDLE:
+        case WAITING_ACTION:
+        	notifyUserEvent(UserEvent.UserState.Proceeding);
+            return;
+            
+        case WIN:
+            notifyUserEvent(UserEvent.UserState.Win);
+        	return;
         }
+
     }
 
     public void startGame() {
@@ -236,8 +345,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         this.userEventCallback = uec;
     }
 
-    public void notifyUserEvent(boolean success) {
-        UserEvent event = new UserEvent(this, success);
+    public void notifyUserEvent(UserEvent.UserState userState) {
+        UserEvent event = new UserEvent(this, userState);
         if (userEventCallback != null) {
             userEventCallback.onUserEvent(event);
         }

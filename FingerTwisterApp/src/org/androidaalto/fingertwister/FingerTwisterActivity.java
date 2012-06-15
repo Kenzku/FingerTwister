@@ -2,6 +2,7 @@ package org.androidaalto.fingertwister;
 
 import android.view.*;
 import org.androidaalto.fingertwister.GamePanel.Fingers;
+import org.androidaalto.fingertwister.UserEvent.UserState;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 public class FingerTwisterActivity extends Activity implements UserEventCallback {
 
     static final int DIALOG_GAME_OVER = 0;
+    static final int WIN = 1;
 
     private GamePanel gamePane;
 
@@ -99,64 +101,89 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
     }
 
     @Override
-    public void onUserEvent(UserEvent event) {
-        boolean success = event.getSuccess();
-        if (success == true) {
-            GamePanel.Instruction currentInstruction = gamePane.getCurrentInstruction();
+	public void onUserEvent(UserEvent event) {
 
-            TextView colorTextView = (TextView) findViewById(R.id.instruction_color);
-            colorTextView.setBackgroundColor(currentInstruction.color);
+		UserState userState = event.getUserState();
 
-            TextView fingerTextView = (TextView) findViewById(R.id.instruction_finger);
+		switch (userState) {
+		case Win:
+			Log.i("FingerTwister", "recieved Win event");
+			showDialog(WIN);
+			return;
 
-            switch (currentInstruction.finger) {
-                case INDEX:
-                    fingerTextView.setText(R.string.index_finger);
-                    break;
-                case MIDDLE:
-                    fingerTextView.setText(R.string.middle_finger);
-                    break;
-                case RING:
-                    fingerTextView.setText(R.string.ring_finger);
-                    break;
-                case LITTLE:
-                    fingerTextView.setText(R.string.little_finger);
-                    break;
-            }
-        } else {
-            showDialog(DIALOG_GAME_OVER);
-        }
-    }
+		case Lose:
+			Log.i("FingerTwister", "recieved Lose event");
+			showDialog(DIALOG_GAME_OVER);
+			return;
+
+		case Proceeding:
+			GamePanel.Instruction currentInstruction = gamePane
+					.getCurrentInstruction();
+
+			TextView colorTextView = (TextView) findViewById(R.id.instruction_color);
+			colorTextView.setBackgroundColor(currentInstruction.color);
+
+			TextView fingerTextView = (TextView) findViewById(R.id.instruction_finger);
+
+			switch (currentInstruction.finger) {
+			case INDEX:
+				fingerTextView.setText(R.string.index_finger);
+				break;
+			case MIDDLE:
+				fingerTextView.setText(R.string.middle_finger);
+				break;
+			case RING:
+				fingerTextView.setText(R.string.ring_finger);
+				break;
+			case LITTLE:
+				fingerTextView.setText(R.string.little_finger);
+				break;
+			}
+
+			return;
+		}
+	}
 
     @Override
-    protected Dialog onCreateDialog(int id) {
-        Dialog dialog;
-        switch (id) {
-            case DIALOG_GAME_OVER:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("Game over!")
-                        .setCancelable(false)
-                        .setPositiveButton("New Game", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                gamePane.startGame();
-                            }
-                        })
-                        .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Intent intent = new Intent(Intent.ACTION_MAIN);
-                                intent.addCategory(Intent.CATEGORY_HOME);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            }
-                        });
-                dialog = builder.create();
-                break;
-            default:
-                dialog = null;
-        }
+	protected Dialog onCreateDialog(int id) {
+		Dialog dialog;
+		switch (id) {
+		case DIALOG_GAME_OVER:
+		case WIN:
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			if (id == DIALOG_GAME_OVER) {
+				builder = builder.setMessage("Game over!");
+			} else {
+				builder = builder.setMessage("You Win!");
+			}
 
-        return dialog;
-    }
+			builder.setCancelable(false)
+					.setPositiveButton("New Game",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									gamePane.startGame();
+								}
+							})
+					.setNegativeButton("Exit",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									Intent intent = new Intent(
+											Intent.ACTION_MAIN);
+									intent.addCategory(Intent.CATEGORY_HOME);
+									intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+									startActivity(intent);
+								}
+							});
+			dialog = builder.create();
+			break;
+		default:
+			dialog = null;
+		}
+
+		return dialog;
+	}
 
 
 }
