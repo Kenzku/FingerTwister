@@ -1,6 +1,8 @@
 package org.androidaalto.fingertwister;
 
 
+import java.io.IOException;
+
 import org.androidaalto.fingertwister.UserEvent.UserState;
 
 import android.app.Activity;
@@ -8,6 +10,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -27,6 +30,9 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
 
     private GamePanel gamePane;
     private TextView colorTextView = null;
+    
+    private MyMusic soundPlayer = null;
+    
     /**
      * Called when the activity is first created.
      */
@@ -48,7 +54,8 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
             }
         });
         
-//        gamePane.startGame();
+
+       soundPlayer = new MyMusic(this.getApplicationContext());
     }
 
 //    @Override
@@ -113,11 +120,14 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
 		switch (userState) {
 		case Win:
 			Log.i("FingerTwister", "recieved Win event");
+			soundPlayer.playWinSound();
 			showDialog(WIN);
 			return;
 
 		case Lose:
 			Log.i("FingerTwister", "recieved Lose event");
+			soundPlayer.playLoseSound();
+
 			showDialog(DIALOG_GAME_OVER);
 			return;
 
@@ -158,8 +168,12 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
 		case WIN:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			if (id == DIALOG_GAME_OVER) {
+				
+				
 				builder = builder.setMessage("Game over!");
 			} else {
+				
+				
 				builder = builder.setMessage("You Win!");
 			}
 
@@ -181,6 +195,7 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
 									intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 									startActivity(intent);
 								}
+								
 							});
 			dialog = builder.create();
 			break;
@@ -277,4 +292,14 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
             colorTextView.startAnimation(rotation);
         }
     }
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onDestroy()
+	 */
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		soundPlayer.releaseAll();
+	}
 }
