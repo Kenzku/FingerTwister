@@ -26,7 +26,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 	private static final String LOG_TAG = "FingerTwister";
 	
     private static final int MAX_FINGERS = 5;
-
+    private int backgroundColour = Color.GRAY;
 //    Engine engine;
     GameCircleManager circleManager;
     
@@ -80,6 +80,25 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 //        engine.setRunning(true);
 //        engine.start();
 
+        //decide backgroud
+        Random r = new Random();
+    	switch(r.nextInt(5)){
+	    	case 0:
+	            break;
+	        case 1:
+	        	backgroundColour = 0xFFE8FFFF;
+	            break;
+	        case 2:
+	        	backgroundColour = 0xFFFFE9FF;
+	            break;
+	        case 3:
+	        	backgroundColour = 0xFFEBDDE2;
+	            break;
+	        case 4:
+	        	backgroundColour = 0xFFFDEEF4;
+	            break;
+    	}
+        
         Rect frameRect = getHolder().getSurfaceFrame();
         circleManager = new GameCircleManager(frameRect, getResources());
         
@@ -247,7 +266,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
     
     public void draw(Canvas canvas) {
         // Draw everything on the screen here (called 25times/second)
-    	canvas.drawColor(Color.LTGRAY);
+    	canvas.drawColor(backgroundColour);
     	this.circleManager.drawCircles(canvas);
     }
     
