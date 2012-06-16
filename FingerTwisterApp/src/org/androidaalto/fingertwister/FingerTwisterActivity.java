@@ -1,8 +1,6 @@
 package org.androidaalto.fingertwister;
 
 
-import java.io.IOException;
-
 import org.androidaalto.fingertwister.UserEvent.UserState;
 
 import android.app.Activity;
@@ -10,12 +8,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
