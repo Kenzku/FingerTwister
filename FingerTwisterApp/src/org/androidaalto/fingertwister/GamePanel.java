@@ -267,7 +267,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
     public void draw(Canvas canvas) {
         // Draw everything on the screen here (called 25times/second)
     	canvas.drawColor(backgroundColour);
-    	this.circleManager.drawCircles(canvas);
+    	
+    	if (circleManager != null) {
+    		this.circleManager.drawCircles(canvas);
+    	}
     }
     
     private int getRealPixels(float dpi) {
