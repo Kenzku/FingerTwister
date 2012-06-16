@@ -50,7 +50,7 @@ public class GameCircleManager {
 			radius = canvasWidth/8;
 		}
 		
-		radius = (int)(radius * 1);
+		radius = (int)(radius * 0.8);
 		
 		return radius;
 	}

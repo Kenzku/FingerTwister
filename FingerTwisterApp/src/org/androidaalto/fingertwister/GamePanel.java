@@ -27,7 +27,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 	
     private static final int MAX_FINGERS = 5;
 
-    Engine engine;
+//    Engine engine;
     GameCircleManager circleManager;
     
     Random randomNumberGenerator;
@@ -76,13 +76,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         mCurrTouchPoint = new PointInfo();
         mInstructionHistory = new ArrayList<Instruction>();
 
-        engine = new Engine(this);
-        engine.setRunning(true);
-        engine.start();
+//        engine = new Engine(this);
+//        engine.setRunning(true);
+//        engine.start();
 
         Rect frameRect = getHolder().getSurfaceFrame();
         circleManager = new GameCircleManager(frameRect, getResources());
-
+        
         generateNextInstruction();
         updateGameState(GameState.WAITING_ACTION);
     }
@@ -217,15 +217,42 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
         }
     }
 
+
+    /**
+     * update the graphics on this view
+     */
+	public void updateGraphicalView() {
+		Log.i(LOG_TAG, "updateGraphicalView");
+		SurfaceHolder sHolder = this.getHolder();
+
+		Canvas canvas = null;
+
+		do {
+
+			canvas = sHolder.lockCanvas();
+			if (canvas == null) {
+				try {
+					Thread.sleep(40);
+				} catch (InterruptedException e) {
+
+				}
+			}
+		} while (canvas == null);
+
+		draw(canvas);
+
+		sHolder.unlockCanvasAndPost(canvas);
+
+	}
+    
     public void draw(Canvas canvas) {
         // Draw everything on the screen here (called 25times/second)
 
-        //Draw the background (blue)
         canvas.drawColor(Color.GRAY);
 
         this.circleManager.drawCircles(canvas);
     }
-
+    
     private int getRealPixels(float dpi) {
         int value = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (float) dpi, getResources().getDisplayMetrics());
         return value;
@@ -245,9 +272,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 
     @Override
     public void surfaceDestroyed(SurfaceHolder arg0) {
-        if (engine.isAlive()) {
-            engine.setRunning(false);
-        }
+//        if (engine.isAlive()) {
+//            engine.setRunning(false);
+//        }
     }
 
 
@@ -347,6 +374,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
 
     public void notifyUserEvent(UserEvent.UserState userState) {
         UserEvent event = new UserEvent(this, userState);
+		
+        // notify activity
         if (userEventCallback != null) {
             userEventCallback.onUserEvent(event);
         }

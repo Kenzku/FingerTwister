@@ -1,7 +1,5 @@
 package org.androidaalto.fingertwister;
 
-import android.view.*;
-import org.androidaalto.fingertwister.GamePanel.Fingers;
 import org.androidaalto.fingertwister.UserEvent.UserState;
 
 import android.app.Activity;
@@ -11,12 +9,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
-
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 public class FingerTwisterActivity extends Activity implements UserEventCallback {
@@ -105,6 +101,8 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
 
 		UserState userState = event.getUserState();
 
+		gamePane.updateGraphicalView();
+
 		switch (userState) {
 		case Win:
 			Log.i("FingerTwister", "recieved Win event");
@@ -139,7 +137,6 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
 				fingerTextView.setText(R.string.little_finger);
 				break;
 			}
-
 			return;
 		}
 	}
