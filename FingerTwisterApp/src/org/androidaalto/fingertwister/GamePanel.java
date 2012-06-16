@@ -268,6 +268,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback,
     @Override
     public void surfaceCreated(SurfaceHolder arg0) {
         mState = GameState.IDLE;
+        
+        startGame();        
     }
 
     @Override

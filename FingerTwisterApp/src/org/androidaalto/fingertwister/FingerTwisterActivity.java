@@ -47,6 +47,8 @@ public class FingerTwisterActivity extends Activity implements UserEventCallback
                 gamePane.startGame();
             }
         });
+        
+//        gamePane.startGame();
     }
 
 //    @Override
